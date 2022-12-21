@@ -1,4 +1,10 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+} from '@nestjs/common';
 
 const DUMMY_PLACES = [
   {
@@ -10,14 +16,35 @@ const DUMMY_PLACES = [
       lng: -68.1145473,
     },
     address: '20 W 34th St., New York, NY 10001',
-    user: 'u1',
+    creator: 'u1',
   },
 ];
 @Controller('/api/places')
 export class PlacesController {
   @Get('/:placeId')
-  getPlaces(@Param('placeId') placeId: string) {
+  getPlaceByID(@Param('placeId') placeId: string) {
     const place = DUMMY_PLACES.find((place) => place.id === placeId);
+
+    if (!place) {
+      throw new HttpException(
+        'Could not find a place for the provided ID.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return { place };
+  }
+
+  @Get('/user/:userId')
+  getPlaceByUserID(@Param('userId') userId: string) {
+    const place = DUMMY_PLACES.find((place) => place.creator === userId);
+
+    if (!place) {
+      throw new HttpException(
+        'Could not find a place for the provided user ID.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
 
     return { place };
   }
