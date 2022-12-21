@@ -1,10 +1,16 @@
 import {
+  Body,
   Controller,
   Get,
   HttpException,
   HttpStatus,
   Param,
+  Post,
 } from '@nestjs/common';
+import { v4 as uuid } from 'uuid';
+
+import { CreatePlaceDto } from './dto/create-place.dto';
+import { ICoord } from 'src/shared/icoord';
 
 const DUMMY_PLACES = [
   {
@@ -47,5 +53,23 @@ export class PlacesController {
     }
 
     return { place };
+  }
+
+  @Post('/')
+  createPlace(@Body() createTaskDto: CreatePlaceDto) {
+    const { title, description, coordinates, address, creator } = createTaskDto;
+
+    const createdPlace = {
+      id: uuid(),
+      title,
+      description,
+      location: coordinates,
+      address,
+      creator,
+    };
+
+    DUMMY_PLACES.push(createdPlace);
+
+    return { place: createdPlace };
   }
 }
